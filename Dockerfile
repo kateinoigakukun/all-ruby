@@ -3,6 +3,7 @@ ARG version=bullseye
 ARG variant=-slim
 ARG mirror=http://deb.debian.org/debian
 ARG system_ruby=ruby2.7
+ARG keep_log=0
 
 # Build for 0.*, 1.0*, 1.1*, 1.8 and 1.8.5
 FROM debian:buster-slim
@@ -40,7 +41,8 @@ RUN rake -j ${j} all-0 all-1.0 all-1.1a all-1.1b all-1.1c all-1.1d all-1.8 all-1
 RUN rake -j ${j} all-2.0.0
 
 RUN rm -rf Rakefile versions/ patch/
-RUN rm -rf DIST build/*/log build/*/ruby*/
+RUN rm -rf DIST build/*/ruby*/
+RUN if [ "${keep_log}" -eq 0 ]; then rm -rf build/*/log; fi
 RUN rm -rf build/*/man build/*/share/man build/*/share/doc build/*/share/ri
 RUN rm -f build/*/lib/libruby-static.a
 RUN rm -f build/*/bin/gcc build/*/bin/cc
@@ -109,7 +111,8 @@ COPY lib/* /all-ruby/lib/
 COPY all-ruby /all-ruby/
 
 RUN rm -rf Rakefile versions/ patch/
-RUN rm -rf DIST build/*/log build/*/ruby*/
+RUN rm -rf DIST build/*/ruby*/
+RUN if [ "${keep_log}" -eq 0 ]; then rm -rf build/*/log; fi
 RUN rm -rf build/*/man build/*/share/man build/*/share/doc build/*/share/ri
 RUN rm -f build/*/lib/libruby-static.a
 RUN rm -f build/*/bin/gcc build/*/bin/cc
