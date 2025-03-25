@@ -236,6 +236,7 @@ class RubySource
     FileUtils.mkpath "#{prefixdir}/log"
     log_fn = "#{prefixdir}/log/#{tag}.txt"
     status_fn = "#{prefixdir}/log/#{tag}.status"
+    time_fn = "#{prefixdir}/log/#{tag}.time"
     print "#{tag} #{version}\n"
     if command.last.kind_of? Hash
       opt = command.last.dup
@@ -244,9 +245,12 @@ class RubySource
       opt = {}
     end
     opt[[:out, :err]] = [log_fn, "w"]
+    start = Time.now
     system(*command, opt)
     status = $?
+    took = Time.now - start
     open(status_fn, "w") {|f| f.puts status.to_s.sub(/\Apid \d+ /, '') }
+    open(time_fn, "w") {|f| f.puts took }
     print "fail #{tag} #{version}\n" if !status.success?
     status.success?
   end
