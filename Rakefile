@@ -715,6 +715,14 @@ task "allseq-first" => all_first
 multitask "all-last" => all_last
 task "allseq-last" => all_last
 
+multitask "dist-all" => RubySource::TABLE.map {|h| "DIST/#{h[:fn]}" } do
+  RubySource::TABLE.each do |h|
+    source = RubySource.new(h[:version])
+    srcdir = source.extract_tarball("DIST/#{h[:fn]}")
+    method = source.apply_workaround(srcdir)
+  end
+end
+
 task :test do
   test_files = Dir.glob('test/test_*.rb')
   system(RbConfig.ruby, '-e' 'ARGV.each {|fn| load fn}', *test_files)
